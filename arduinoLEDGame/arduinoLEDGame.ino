@@ -17,7 +17,7 @@ bool IdleMode = false;
 bool GamePlaying = false;
 bool showLed = false;
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600);  
   randomSeed(analogRead(0));
   for(int i = LedPinStart; i<=LedPinEnd;i++)
   {
@@ -67,6 +67,7 @@ void InitGame()
 {
     for(int i=0;i<numberOfLeds;i++)
     {
+      randomSeed(analogRead(0));
       LEDorder[i] = random(LedPinStart,LedPinEnd+1);
       Serial.println(LEDorder[i]);
     }
