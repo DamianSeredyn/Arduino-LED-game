@@ -1,6 +1,9 @@
 
 const int LedPinStart = 8;
 const int LedPinEnd = 11;
+const int buttonOut = 12;
+const int buttonIn = 2;
+
 
 unsigned long actualTime = 0;
 unsigned long currentTime = 0;
@@ -16,16 +19,18 @@ bool showLed = false;
 void setup() {
   Serial.begin(9600);
   randomSeed(analogRead(0));
-  for(int i = LedPinStart; i<LedPinEnd;i++)
+  for(int i = LedPinStart; i<=LedPinEnd;i++)
   {
     pinMode(i, OUTPUT);
   }
-  InitGame();
+  pinMode(buttonOut, OUTPUT);
+  pinMode(buttonIn, INPUT);
+  digitalWrite(buttonOut,HIGH);
+  attachInterrupt(digitalPinToInterrupt(buttonIn), StartGame, HIGH ); 
 }
 
 void loop() {
   actualTime = millis();
-  
   if(GamePlaying)
   {
     if(showLed)
@@ -70,6 +75,12 @@ void InitGame()
     index = 0;
     currentTime = actualTime;
     digitalWrite(LEDorder[index],HIGH);
+}
+
+void StartGame()
+{
+    if(!GamePlaying)
+    InitGame();
 }
 
 
