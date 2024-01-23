@@ -7,7 +7,11 @@ const int buttonIn = 2;
 
 unsigned long actualTime = 0;
 unsigned long currentTime = 0;
+unsigned long buttonTime = 0;
 unsigned long LedTime = 500;
+unsigned long lightime = 0;
+
+unsigned long currentPressed = 0;
 
 unsigned int numberOfLeds = 5;
 unsigned int index;
@@ -57,7 +61,33 @@ void loop() {
     }
     else
     {
+      if(actualTime - buttonTime >= 50)
+      {
+        if(actualTime - lightime >= 200)
+        {
+          digitalWrite(currentPressed,LOW);
+          buttonTime = actualTime;
+        }
+        if(!digitalRead(currentPressed-5) && currentPressed!=0)
+          return;
+        
+        if(!digitalRead(currentPressed) && digitalRead(currentPressed-5))
+        {
+          currentPressed =0;
+        }
+          for(int i = 3; i<=6;i++)
+          {
+            if(!digitalRead(i) && currentPressed != i+5)
+            {
+              digitalWrite(i+5,HIGH);
+              currentPressed = i+5;
+              lightime = actualTime;
+              Serial.println(i+5);
+              break;
+            }
+          }
 
+      }
     }
   }
   
