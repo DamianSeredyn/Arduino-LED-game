@@ -23,14 +23,19 @@ void setup() {
   {
     pinMode(i, OUTPUT);
   }
+  for(int i = 3; i<=7;i++)
+  {
+    pinMode(i, INPUT);
+  }
   pinMode(buttonOut, OUTPUT);
   pinMode(buttonIn, INPUT);
   digitalWrite(buttonOut,HIGH);
-  attachInterrupt(digitalPinToInterrupt(buttonIn), StartGame, HIGH ); 
+  attachInterrupt(digitalPinToInterrupt(buttonIn), StartGame, LOW ); 
 }
 
 void loop() {
   actualTime = millis();
+  Serial.println(digitalRead(2));
   if(GamePlaying)
   {
     if(showLed)
@@ -42,7 +47,7 @@ void loop() {
           {
             showLed = false;
           }
-          else if(actualTime - currentTime >= LedTime+75)
+          else if(actualTime - currentTime >= LedTime+100)
           {
             index++;
             digitalWrite(LEDorder[index],HIGH);
