@@ -1,7 +1,7 @@
 
 const int LedPinStart = 8;
 const int LedPinEnd = 11;
-const int buttonOut = 12;
+const int buzzer = 12;
 const int buttonIn = 2;
 
 const int loseDiode = 7;
@@ -11,7 +11,7 @@ unsigned long actualTime = 0;
 unsigned long currentTime = 0;
 unsigned long buttonTime = 0;
 unsigned long EndLEDTime = 0;
-unsigned long LedTime = 500;
+unsigned long LedTime = 300;
 unsigned long lightime = 0;
 
 unsigned long currentPressed = 0;
@@ -36,9 +36,8 @@ void setup() {
   {
     pinMode(i, INPUT);
   }
-  pinMode(buttonOut, OUTPUT);
+  pinMode(buzzer, OUTPUT);
   pinMode(buttonIn, INPUT);
-  digitalWrite(buttonOut,HIGH);
   attachInterrupt(digitalPinToInterrupt(buttonIn), StartGame, LOW ); 
 }
 
@@ -51,7 +50,7 @@ void loop() {
         if(actualTime - currentTime >= LedTime)
         {
           digitalWrite(LEDorder[index],LOW);
-          if(numberOfLeds<index)
+          if(numberOfLeds-1<=index)
           {
             showLed = false;
           }
@@ -67,6 +66,10 @@ void loop() {
     {
       if(actualTime - buttonTime >= 25)
       {
+        if(actualTime - lightime >= 10)
+        {
+          digitalWrite(buzzer,LOW);
+        }
         if(actualTime - lightime >= 250)
         {
           digitalWrite(currentPressed,LOW);
@@ -83,11 +86,12 @@ void loop() {
           {
             if(!digitalRead(i) && currentPressed != i+5)
             {
-              Serial.println("klik");
+
               digitalWrite(i+5,HIGH);
+              digitalWrite(buzzer,HIGH);
               currentPressed = i+5;
               lightime = actualTime;
-              if(playerProgress == numberOfLeds || LEDorder[playerProgress] != currentPressed)
+              if(playerProgress == numberOfLeds-1 || LEDorder[playerProgress] != currentPressed)
               {
                 GameFinished = true;
                 GamePlaying = false;
@@ -96,12 +100,12 @@ void loop() {
                   digitalWrite(i, HIGH);
                 }
                 EndLEDTime = actualTime;
-                if(playerProgress == numberOfLeds)
+                if(playerProgress == numberOfLeds-1)
                   digitalWrite(winDiode, HIGH);
                 else
                   digitalWrite(loseDiode, HIGH);
               } 
-              playerProgress++;            
+              playerProgress++;           
             }
             }
       }
@@ -109,6 +113,14 @@ void loop() {
   }
   if(GameFinished)
   {
+    if(actualTime - EndLEDTime >= 10)
+    {
+        digitalWrite(buzzer,LOW);
+    }
+    if(actualTime - EndLEDTime >= 20)
+    {
+        digitalWrite(buzzer,HIGH);
+    }
     if(actualTime - EndLEDTime >= 500)
     {
       GameFinished = false;
@@ -130,10 +142,14 @@ void loop() {
 
 void InitGame()
 {
+    randomSeed(analogRead(A1));
     for(int i=0;i<numberOfLeds;i++)
     {
-      randomSeed(analogRead(0));
       LEDorder[i] = random(LedPinStart,LedPinEnd+1);
+      while(LEDorder[i] == LEDorder[i-1])
+      {
+          LEDorder[i] = random(LedPinStart,LedPinEnd+1);
+      }
     }
     showLed = true;
     GamePlaying = true;
@@ -148,7 +164,3 @@ void StartGame()
     if(!GamePlaying && !GameFinished)
       InitGame();
 }
-
-
-
-
